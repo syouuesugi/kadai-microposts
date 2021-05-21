@@ -15,8 +15,35 @@
       <li class="nav-item"><a href="<%= user_path(@user) %>" class="nav-link <%= 'active' if current_page?(user_path(@user)) %>">Microposts  <span class="badge badge-secondary"><%= @count_microposts %></span></a></li>
       <li class="nav-item"><a href="<%= followings_user_path(@user) %>" class="nav-link <%= 'active' if current_page?(followings_user_path(@user)) %>">Followings  <span class="badge badge-secondary"><%= @count_followings %></span></a></li>
       <li class="nav-item"><a href="<%= followers_user_path(@user) %>" class="nav-link <%= 'active' if current_page?(followers_user_path(@user)) %>">Followers  <span class="badge badge-secondary"><%= @count_followers %></span></a></li>
+      <!-- ここにlikeの一覧ページ作成 -->
       <li class="nav-item"><a href="<%= likes_user_path(@user) %>" class="nav-link <%= 'active' if current_page?(likes_user_path(@user)) %>">Likes  <span class="badge badge-secondary"><%= @count_likes %></span></a></li>
     </ul>
-    <%= render 'users', users: @followings %>
+    <!--いいね一覧表を-->
+    <%@likes.each do |like|%>
+      <%micropost=Micropost.find_by(id: like.micropost_id)%>
+      <li class="media mb-3">
+        <img class="mr-2 rounded" src="<%= gravatar_url(micropost.user, { size: 50 }) %>" alt="">
+        <div class="media-body">
+          <%= link_to micropost.user.name, user_path(micropost.user) %> <span class="text-muted">posted at <%= micropost.created_at %></span>
+          <p class="mb-0"><%= micropost.content %></p>
+          <% if current_user == micropost.user %>
+            <%= link_to "Delete", micropost, method: :delete, data: { confirm: "You sure?" }, class: 'btn btn-danger btn-sm' %>
+          <% end %>
+          
+          <!-- お気に入り機能 -->
+           <% if current_user.already_favorited?(micropost) %>
+                  <%= link_to micropost_favorites_path(micropost), method: :delete do %>
+                    <i class="fas fa-heart"></i>
+                  <% end %>
+                  <%= micropost.favorites.count %>
+           <% else %>
+                  <%= link_to micropost_favorites_path(micropost), method: :post do %>
+                    <i class="far fa-heart"></i>
+                  <% end %>
+                  <%= micropost.favorites.count %>
+           <% end %>
+        </div>
+      </li>
+    <%end%>
   </div>
 </div>

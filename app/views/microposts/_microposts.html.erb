@@ -13,6 +13,22 @@
           <% if current_user == micropost.user %>
             <%= link_to "Delete", micropost, method: :delete, data: { confirm: "You sure?" }, class: 'btn btn-danger btn-sm' %>
           <% end %>
+          
+          <!-- お気に入り機能 -->
+           <% if current_user.already_favorited?(micropost) %>
+                  <%= link_to micropost_favorites_path(micropost), method: :delete do %>
+                    <i class="fas fa-heart"></i>
+                  <% end %>
+                  <%= micropost.favorites.count %>
+           <% else %>
+                  <%= link_to micropost_favorites_path(micropost), method: :post do %>
+                    <i class="far fa-heart"></i>
+                  <% end %>
+                  <%= micropost.favorites.count %>
+           <% end %>
+           
+          
+          
         </div>
       </div>
     </li>
